@@ -35,9 +35,14 @@ export default function Editor({
 
   // Build highlighted HTML from content + claims
   const getHighlightedHTML = useCallback(() => {
-    if (!content || claims.length === 0) {
-      // Return content with HTML entities escaped, preserving whitespace
-      return escapeHTML(content) || '<span class="text-white/20">Start writing or paste your research text here...</span>';
+    if (!content) {
+      // Avoid duplicate placeholder text: textarea already provides placeholder copy.
+      return '';
+    }
+
+    if (claims.length === 0) {
+      // Return content with HTML entities escaped, preserving whitespace.
+      return escapeHTML(content);
     }
 
     // Sort claims by startIndex
@@ -99,7 +104,7 @@ export default function Editor({
         {/* Highlight overlay (behind textarea) */}
         <div
           ref={highlightRef}
-          className="highlight-layer absolute inset-0 p-8 md:p-12 lg:p-16 overflow-auto whitespace-pre-wrap break-words text-base leading-8 font-serif pointer-events-none"
+          className="highlight-layer absolute inset-0 p-8 md:p-12 lg:p-16 overflow-auto whitespace-pre-wrap wrap-break-word text-base leading-8 font-sans pointer-events-none"
           aria-hidden="true"
           dangerouslySetInnerHTML={{ __html: getHighlightedHTML() }}
         />
@@ -115,17 +120,17 @@ export default function Editor({
 IThink will automatically detect factual claims, find supporting sources from CrossRef and arXiv, and score credibility.
 
 Try pasting a paragraph from a literature review, research paper, or any academic text."
-          className="editor-textarea absolute inset-0 w-full h-full resize-none p-8 md:p-12 lg:p-16 text-base leading-8 font-serif bg-transparent text-transparent caret-indigo-400 outline-none placeholder:text-white/15 selection:bg-indigo-500/30"
+          className="editor-textarea absolute inset-0 w-full h-full resize-none p-8 md:p-12 lg:p-16 text-base leading-8 font-sans bg-transparent text-transparent caret-indigo-500 outline-none placeholder:text-(--text-placeholder) selection:bg-indigo-500/30"
           spellCheck={false}
         />
       </div>
 
       {/* Bottom status */}
-      <div className="flex items-center justify-between px-8 py-2 border-t border-white/[0.04] bg-white/[0.01]">
-        <span className="text-[11px] text-white/20">
+      <div className="flex items-center justify-between px-8 py-2 border-t border-(--border-subtle) bg-(--surface-soft)">
+        <span className="text-[11px] text-(--text-faint)">
           {content.length > 0 ? `${content.split(/\s+/).filter(Boolean).length} words · ${content.length} characters` : 'Ready'}
         </span>
-        <span className="text-[11px] text-white/20">
+        <span className="text-[11px] text-(--text-faint)">
           {claims.length > 0 ? `${claims.length} claims detected` : ''}
         </span>
       </div>

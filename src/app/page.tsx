@@ -4,14 +4,29 @@
 // IThink – Main Page (App Orchestration)
 // ═══════════════════════════════════════════════════════════════
 
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { Claim, ValidationResult } from '@/lib/types';
 import Toolbar from '@/components/Toolbar';
 import Editor from '@/components/Editor';
 import Sidebar from '@/components/Sidebar';
 
+type ThemeMode = 'dark' | 'light';
+
+function getInitialTheme(): ThemeMode {
+  if (typeof window === 'undefined') return 'dark';
+
+  const saved = window.localStorage.getItem('ithink-theme');
+  if (saved === 'dark' || saved === 'light') {
+    return saved;
+  }
+
+  const prefersLight = window.matchMedia?.('(prefers-color-scheme: light)').matches;
+  return prefersLight ? 'light' : 'dark';
+}
+
 export default function Home() {
   // ─── State ──────────────────────────────────────────
+  const [theme, setTheme] = useState<ThemeMode>(getInitialTheme);
   const [content, setContent] = useState('');
   const [claims, setClaims] = useState<Claim[]>([]);
   const [validations, setValidations] = useState<Record<string, ValidationResult>>({});
@@ -22,6 +37,12 @@ export default function Home() {
   const [isSummarizing, setIsSummarizing] = useState(false);
 
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
+
+  // ─── Theme Sync ─────────────────────────────────────
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    window.localStorage.setItem('ithink-theme', theme);
+  }, [theme]);
 
   // ─── Analyze Claims ─────────────────────────────────
   const analyzeClaims = useCallback(async (text?: string) => {
@@ -158,6 +179,8 @@ export default function Home() {
         onExport={handleExport}
         validationMode={validationMode}
         onToggleValidation={() => setValidationMode(!validationMode)}
+        theme={theme}
+        onToggleTheme={() => setTheme((current) => (current === 'dark' ? 'light' : 'dark'))}
       />
 
       {/* Main content: Editor + Sidebar */}
