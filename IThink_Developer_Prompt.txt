@@ -1,0 +1,163 @@
+
+IThink Web App Developer Prompt
+===============================
+
+Project Overview
+----------------
+Project Name: IThink – Identify Truth. Highlight Inaccuracies. Navigate Knowledge.
+
+Purpose:
+Build a student-friendly, agentic AI web app that empowers users to:
+1. Discover credible sources quickly
+2. Summarize insights efficiently
+3. Organize research and citations seamlessly
+
+The web app should look like a blank canvas writing editor (like Google Docs) with a floating sidebar for claims, citations, credibility scores, and interactive AI suggestions. The AI should act agentically – proactively validating claims, suggesting better sources, and detecting contradictions.
+
+Key Features
+------------
+1. Blank Canvas Editor:
+   - Minimalist writing space for RRL or research text.
+   - Real-time highlighting of detected claims and citations.
+
+2. Claim Detection Module:
+   - Detect factual statements automatically as user types.
+   - Extract in-text citations and map them to sources.
+
+3. Source Discovery:
+   - Automatically search trusted databases:
+     - Google Scholar API (via SerpAPI)
+     - CrossRef API
+     - arXiv API
+     - Optional: ScienceDirect API
+   - Filter results by peer-reviewed, recent, and authoritative publications.
+
+4. Interactive Citation Explorer:
+   - Click on a claim/citation → display snippet from original source
+   - Expandable: full paragraph, tables, or graphs
+   - Highlights claim-to-source connection
+
+5. AI Summarization Module:
+   - Summarizes key insights per claim from multiple sources
+   - Supports expandable views for more context
+
+6. Credibility Scoring:
+   - High ✅, Needs Verification ⚠️, Likely False ❌
+   - Updates dynamically as AI cross-verifies new sources
+
+7. Research Organization Tools:
+   - Sidebar allows drag-and-drop claims into sections
+   - Automatic bibliography generation (APA/MLA/IEEE)
+   - Collaborative editing in real-time
+
+8. Agentic AI Behavior:
+   - Proactively suggests better or missing sources
+   - Flags contradictions between sources
+   - Continuously monitors and updates credibility scores
+
+Suggested Tech Stack
+-------------------
+
+| Layer | Technology / Tool | Notes |
+|-------|-----------------|-------|
+| Frontend | React.js / Next.js | For dynamic UI, blank canvas editor, and sidebar interactions |
+| UI Styling | TailwindCSS | Clean, responsive, modern student-friendly interface |
+| Backend | FastAPI (Python) | Lightweight, high-performance API server; integrates easily with AI/NLP modules |
+| AI / NLP | OpenAI GPT-4 / LLM, HuggingFace Transformers, spaCy | Claim extraction, summarization, validation reasoning |
+| Agent Orchestration | LangChain / LlamaIndex | Manage multi-step AI tasks, proactive reasoning |
+| Database | PostgreSQL | Store user documents, claims, citations, credibility scores |
+| Search / Indexing | Elasticsearch | Fast search for claim cross-verification and snippets |
+| Authentication / Collaboration | Supabase / Firebase Auth | User login, real-time collaboration |
+| Hosting / Deployment | Vercel (frontend), AWS / Render / Railway (backend) | Easy deployment and scalability |
+| PDF Parsing (Optional) | PyMuPDF / pdfplumber | Extract claims & citations from uploaded papers |
+
+System Architecture (Detailed)
+------------------------------
+
+1. Frontend Layer
+- Components:
+  - Blank canvas editor (main text area)
+  - Floating sidebar for claims & citations
+  - Expandable snippet viewer
+  - Toolbar (save, export, toggle validation mode)
+- Functions:
+  - Sends typed/pasted content to backend API
+  - Displays claims, credibility scores, source suggestions
+  - Handles user interactions (clicking citations, drag & drop organization)
+
+2. Backend API Layer (FastAPI)
+- Endpoints:
+  - /upload-doc → accepts uploaded text or PDF
+  - /extract-claims → sends text to AI/NLP for claim & citation extraction
+  - /validate-claims → queries databases, cross-verifies claims, returns credibility scores
+  - /get-snippet → returns highlighted snippet for interactive citation explorer
+  - /generate-bibliography → outputs references in chosen format
+- Functions:
+  - Processes AI/NLP requests
+  - Orchestrates agentic AI modules (claim monitoring, proactive source suggestions)
+  - Stores processed claims, snippets, and credibility scores in database
+
+3. AI / NLP Modules
+- Claim Extraction Module: Extracts factual statements from text using LLM or spaCy; identifies in-text citations
+- Source Validation & Discovery: Queries trusted APIs; ranks sources by authority, recency, and relevance
+- Summarization Module: Condenses insights for each claim; highlights tables, graphs, or paragraphs
+- Agentic AI Module: Continuously monitors claims; proactively suggests better sources; detects contradictions; updates credibility scores
+
+4. Database Layer (PostgreSQL)
+- Tables: users, documents, claims, citations, snippets
+- Search Layer: Elasticsearch indexes claims + snippets for fast retrieval and cross-verification
+
+Workflow / System Flow
+---------------------
+
+[Student Types/Pastes RRL]
+        |
+        v
+[Frontend Blank Canvas]
+        |
+        v
+[Backend API receives content]
+        |
+        v
+[Claim Extraction Module]
+        |
+        v
+[Agentic AI Validation Engine]
+    - Searches trusted sources (Google Scholar, CrossRef, arXiv)
+    - Cross-verifies claims
+    - Assigns credibility score
+    - Summarizes insights
+        |
+        v
+[Interactive Citation Explorer]
+    - Provides exact snippet
+    - Highlights claim-to-source connection
+    - Expandable tables/graphs
+        |
+        v
+[Frontend Sidebar Updates]
+    - Shows claims, scores, summaries, suggested sources
+        |
+        v
+[User Actions]
+    - Click snippet
+    - Accept/Reject suggestions
+    - Organize claims into sections
+        |
+        v
+[Database]
+    - Store document, claims, citations, scores
+
+Hackathon MVP Recommendation
+----------------------------
+Focus on implementing these core features first:
+1. Blank canvas editor + floating sidebar
+2. Claim extraction + credibility scoring
+3. Interactive citation explorer with expandable snippet
+4. Auto-suggest 1–2 top verified sources per claim
+5. Dynamic credibility score updates
+
+Optional / future features:
+- Full bibliography generation
+- Contradiction alerts
+- Real-time collaboration

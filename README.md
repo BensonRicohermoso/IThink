@@ -1,4 +1,21 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+This is a [Next.js](https://nextjs.org) project for IThink, an AI-assisted research and claim validation tool.
+
+## Environment Setup
+
+Create `.env.local` in the project root:
+
+```bash
+GEMINI_API_KEY=your_gemini_key
+HUGGINGFACE_API_KEY=your_huggingface_key
+```
+
+### Hugging Face Token Requirements
+
+`HUGGINGFACE_API_KEY` must be a token that can call Inference Providers. If you see errors similar to:
+
+`This authentication method does not have sufficient permissions to call Inference Providers`
+
+create a new Hugging Face token with permission to use Inference Providers, then replace the value in `.env.local`.
 
 ## Getting Started
 
