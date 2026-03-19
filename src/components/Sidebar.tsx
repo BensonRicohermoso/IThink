@@ -45,7 +45,7 @@ export default function Sidebar({
     return (
       <button
         onClick={() => setCollapsed(false)}
-        className="fixed right-4 top-20 z-40 w-12 h-12 rounded-2xl bg-[#12121a]/90 backdrop-blur-xl border border-white/[0.08] shadow-2xl flex items-center justify-center text-white/60 hover:text-white/90 hover:border-indigo-500/40 transition-all duration-300"
+        className="fixed right-4 top-20 z-40 w-12 h-12 rounded-2xl bg-(--surface) backdrop-blur-xl border border-(--border-subtle) shadow-2xl flex items-center justify-center text-(--text-muted) hover:text-(--text-primary) hover:border-indigo-500/40 transition-all duration-300"
         title="Open sidebar"
       >
         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -56,18 +56,18 @@ export default function Sidebar({
   }
 
   return (
-    <aside className="sidebar w-[380px] flex-shrink-0 h-full flex flex-col bg-[#0c0c14]/95 backdrop-blur-2xl border-l border-white/[0.06] overflow-hidden">
+    <aside className="sidebar w-95 shrink-0 h-full flex flex-col bg-(--surface) backdrop-blur-2xl border-l border-(--border-subtle) overflow-hidden">
       {/* Sidebar Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.06]">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-(--border-subtle)">
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-indigo-500/20 to-purple-500/20 flex items-center justify-center">
+          <div className="w-6 h-6 rounded-lg bg-linear-to-br from-indigo-500/20 to-purple-500/20 flex items-center justify-center">
             <span className="text-xs">🧠</span>
           </div>
-          <span className="text-sm font-semibold text-white/80">AI Research Panel</span>
+          <span className="text-sm font-semibold text-(--text-secondary)">AI Research Panel</span>
         </div>
         <button
           onClick={() => setCollapsed(true)}
-          className="p-1.5 rounded-lg text-white/30 hover:text-white/60 hover:bg-white/5 transition-all"
+          className="p-1.5 rounded-lg text-(--text-faint) hover:text-(--text-muted) hover:bg-(--surface-soft-hover) transition-all"
           title="Collapse sidebar"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -84,8 +84,8 @@ export default function Sidebar({
             onClick={() => setActiveTab(tab.id)}
             className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium transition-all duration-300 ${
               activeTab === tab.id
-                ? 'bg-white/[0.08] text-white border border-white/[0.1] shadow-lg'
-                : 'text-white/40 hover:text-white/60 hover:bg-white/[0.03]'
+                ? 'bg-(--surface-soft-hover) text-(--text-primary) border border-(--border-strong) shadow-lg'
+                : 'text-(--text-muted) hover:text-(--text-secondary) hover:bg-(--surface-soft)'
             }`}
           >
             <span>{tab.icon}</span>
@@ -105,7 +105,7 @@ export default function Sidebar({
         {isAnalyzing && (
           <div className="flex flex-col items-center justify-center py-12 gap-3">
             <div className="w-10 h-10 border-3 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin" />
-            <p className="text-sm text-white/40 animate-pulse">Analyzing your text...</p>
+            <p className="text-sm text-(--text-muted) animate-pulse">Analyzing your text...</p>
           </div>
         )}
 
@@ -114,12 +114,12 @@ export default function Sidebar({
           <div className="space-y-2">
             {claims.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16 gap-4">
-                <div className="w-16 h-16 rounded-2xl bg-white/[0.03] flex items-center justify-center">
+                <div className="w-16 h-16 rounded-2xl bg-(--surface-soft) flex items-center justify-center">
                   <span className="text-3xl opacity-30">📝</span>
                 </div>
                 <div className="text-center">
-                  <p className="text-sm text-white/50">No claims detected yet</p>
-                  <p className="text-xs text-white/25 mt-1">
+                  <p className="text-sm text-(--text-muted)">No claims detected yet</p>
+                  <p className="text-xs text-(--text-faint) mt-1">
                     Type or paste research text, then click <strong>Analyze Claims</strong>
                   </p>
                 </div>
@@ -135,10 +135,10 @@ export default function Sidebar({
                     className={`w-full text-left p-3 rounded-xl border transition-all duration-300 ${
                       isSelected
                         ? 'border-indigo-500/30 bg-indigo-500/10 shadow-lg shadow-indigo-500/10'
-                        : 'border-white/[0.04] bg-white/[0.02] hover:border-white/[0.1] hover:bg-white/[0.04]'
+                        : 'border-(--border-subtle) bg-(--surface-soft) hover:border-(--border-strong) hover:bg-(--surface-soft-hover)'
                     }`}
                   >
-                    <p className="text-sm text-white/80 leading-relaxed line-clamp-3">
+                    <p className="text-sm text-(--text-secondary) leading-relaxed line-clamp-3">
                       &ldquo;{claim.text}&rdquo;
                     </p>
                     {claim.citation && (
@@ -170,12 +170,12 @@ export default function Sidebar({
               />
             ) : (
               <div className="flex flex-col items-center justify-center py-16 gap-4">
-                <div className="w-16 h-16 rounded-2xl bg-white/[0.03] flex items-center justify-center">
+                <div className="w-16 h-16 rounded-2xl bg-(--surface-soft) flex items-center justify-center">
                   <span className="text-3xl opacity-30">🔍</span>
                 </div>
                 <div className="text-center">
-                  <p className="text-sm text-white/50">Select a claim to explore sources</p>
-                  <p className="text-xs text-white/25 mt-1">
+                  <p className="text-sm text-(--text-muted)">Select a claim to explore sources</p>
+                  <p className="text-xs text-(--text-faint) mt-1">
                     Click on a claim in the Claims tab to see related sources
                   </p>
                 </div>
@@ -190,28 +190,28 @@ export default function Sidebar({
             {isSummarizing ? (
               <div className="flex flex-col items-center justify-center py-12 gap-3">
                 <div className="w-10 h-10 border-3 border-purple-500/20 border-t-purple-500 rounded-full animate-spin" />
-                <p className="text-sm text-white/40 animate-pulse">Generating summary...</p>
+                <p className="text-sm text-(--text-muted) animate-pulse">Generating summary...</p>
               </div>
             ) : summaryText ? (
               <div className="space-y-4">
-                <div className="p-4 rounded-xl bg-gradient-to-br from-indigo-500/5 to-purple-500/5 border border-indigo-500/10">
+                <div className="p-4 rounded-xl bg-linear-to-br from-indigo-500/5 to-purple-500/5 border border-indigo-500/10">
                   <div className="flex items-center gap-2 mb-3">
                     <span className="text-sm">💡</span>
-                    <span className="text-xs font-semibold text-white/60 uppercase tracking-wider">AI Insight Summary</span>
+                    <span className="text-xs font-semibold text-(--text-muted) uppercase tracking-wider">AI Insight Summary</span>
                   </div>
-                  <div className="text-sm text-white/70 leading-relaxed whitespace-pre-wrap">
+                  <div className="text-sm text-(--text-secondary) leading-relaxed whitespace-pre-wrap">
                     {summaryText}
                   </div>
                 </div>
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center py-16 gap-4">
-                <div className="w-16 h-16 rounded-2xl bg-white/[0.03] flex items-center justify-center">
+                <div className="w-16 h-16 rounded-2xl bg-(--surface-soft) flex items-center justify-center">
                   <span className="text-3xl opacity-30">💡</span>
                 </div>
                 <div className="text-center">
-                  <p className="text-sm text-white/50">No summary available</p>
-                  <p className="text-xs text-white/25 mt-1">
+                  <p className="text-sm text-(--text-muted)">No summary available</p>
+                  <p className="text-xs text-(--text-faint) mt-1">
                     Analyze claims to generate an AI insight summary
                   </p>
                 </div>
@@ -222,8 +222,8 @@ export default function Sidebar({
       </div>
 
       {/* Status bar */}
-      <div className="px-4 py-2 border-t border-white/[0.06] bg-white/[0.01]">
-        <div className="flex items-center justify-between text-[10px] text-white/25">
+      <div className="px-4 py-2 border-t border-(--border-subtle) bg-(--surface-soft)">
+        <div className="flex items-center justify-between text-[10px] text-(--text-faint)">
           <span>Powered by Gemini AI</span>
           <span>CrossRef · arXiv</span>
         </div>
