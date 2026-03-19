@@ -9,13 +9,59 @@ import { assessClaimNature, scoreSourceRelevance } from '@/lib/huggingface';
 import { Claim, ValidationResult, CredibilityLevel, Source } from '@/lib/types';
 
 function simpleRelevanceScore(claim: string, abstract: string): number {
-  // Fallback keyword matching when HF is unavailable
-  const claimWords = new Set(claim.toLowerCase().split(/\W+/).filter((w) => w.length > 3));
-  const abstractWords = new Set(abstract.toLowerCase().split(/\W+/).filter((w) => w.length > 3));
+  // Enhanced keyword matching with synonym awareness
+  const stopWords = new Set([
+    'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of',
+    'with', 'by', 'from', 'is', 'was', 'are', 'be', 'been', 'being', 'have',
+    'has', 'had', 'do', 'does', 'did', 'will', 'would', 'should', 'could',
+    'this', 'that', 'these', 'those', 'i', 'you', 'he', 'she', 'it', 'we', 'they',
+  ]);
+
+  // Synonym map for better semantic matching
+  const synonymMap: Record<string, string[]> = {
+    activity: ['exercise', 'physical', 'movement', 'workout', 'active'],
+    disease: ['illness', 'disorder', 'condition', 'ailment', 'pathology'],
+    reduce: ['decrease', 'lower', 'diminish', 'mitigate', 'prevent'],
+    increase: ['rise', 'elevate', 'boost', 'enhance', 'augment'],
+    risk: ['hazard', 'danger', 'threat', 'vulnerability', 'susceptibility'],
+    cardiovascular: ['heart', 'cardiac', 'vascular', 'circulatory'],
+    memory: ['cognition', 'recall', 'retention', 'learning'],
+    depression: ['depressive', 'mood', 'mental', 'psychiatric'],
+    anxiety: ['anxious', 'stress', 'worry', 'fear'],
+    sleep: ['dormancy', 'rest', 'slumber', 'insomnia', 'sleeplessness'],
+  };
+
+  // Extract meaningful words
+  const extractWords = (text: string): string[] => {
+    return text
+      .toLowerCase()
+      .split(/\W+/)
+      .filter((w) => w.length > 2 && !stopWords.has(w));
+  };
+
+  const claimWords = extractWords(claim);
+  const abstractText = abstract.toLowerCase();
+
+  // Match claim words with synonyms
+  let matches = 0;
+  for (const word of claimWords) {
+    if (abstractText.includes(word)) {
+      matches += 2; // Exact match worth 2 points
+    } else {
+      // Check for synonyms
+      const synonyms = synonymMap[word] || [];
+      if (synonyms.some((syn) => abstractText.includes(syn))) {
+        matches += 1; // Synonym match worth 1 point
+      }
+    }
+  }
+
+  // Calculate score: (matches / (claim_words * 2)) * 100
+  // Using *2 because each word gets max 2 points
+  const maxPoints = Math.max(claimWords.length * 2, 1);
+  const score = Math.round((matches / maxPoints) * 100);
   
-  const matches = [...claimWords].filter((w) => abstractWords.has(w)).length;
-  const score = (matches / Math.max(claimWords.size, 1)) * 100;
-  return Math.min(score, 95); // Cap at 95% to indicate it's heuristic
+  return Math.max(score, 1); // Return at least 1% if any match exists
 }
 
 function calculateCredibilityScore(
@@ -33,33 +79,38 @@ function calculateCredibilityScore(
 
   // Calculate max relevance score from sources
   const maxRelevance = Math.max(...relevanceScores.map((r) => r / 100));
-  const peerReviewedMatch = sources.some(
-    (s, i) => s.provider === 'crossref' && relevanceScores[i] > 70
+  const topSources = relevanceScores
+    .map((r, i) => ({ relevance: r, provider: sources[i].provider }))
+    .sort((a, b) => b.relevance - a.relevance)
+    .slice(0, 3);
+
+  const peerReviewedMatch = topSources.some(
+    (s) => s.provider === 'crossref' && s.relevance > 50
   );
 
   let score: CredibilityLevel;
   let confidence: number;
   let reasoning: string;
 
-  if (maxRelevance > 0.75 && peerReviewedMatch) {
+  if (maxRelevance > 0.65 && peerReviewedMatch) {
     score = 'high';
     confidence = 85;
     reasoning =
-      'Claim aligns closely with peer-reviewed academic sources found in CrossRef.';
-  } else if (maxRelevance > 0.60) {
+      'Claim is well-supported by peer-reviewed academic sources in CrossRef.';
+  } else if (maxRelevance > 0.50) {
     score = 'needs-verification';
-    confidence = 65;
+    confidence = 70;
     reasoning =
-      'Moderate match with available sources. More recent or authoritative sources recommended.';
-  } else if (maxRelevance > 0.40) {
+      'Claim partially aligns with available sources. Check full paper details for exact match.';
+  } else if (maxRelevance > 0.30) {
     score = 'needs-verification';
-    confidence = 45;
+    confidence = 50;
     reasoning =
-      'Weak match with sources. Claim specificity may differ from existing literature.';
+      'Weak alignment with sources. Claim may use different terminology or require additional evidence.';
   } else {
     score = 'likely-false';
-    confidence = 30;
-    reasoning = 'Found relevant sources but none strongly support this claim.';
+    confidence = 35;
+    reasoning = 'No strong source support found. Claim may not be covered in academic literature.';
   }
 
   return { score, confidence, reasoning };
